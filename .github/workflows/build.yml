@@ -29,13 +29,21 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Setup Gradle Wrapper
+      - name: Setup Gradle Wrapper (Gradle 8.4)
         run: |
           flutter create --project-name=temp_app temp_app
           cp -n temp_app/android/gradlew android/ || true
           cp -rn temp_app/android/gradle android/ || true
           chmod +x android/gradlew
           rm -rf temp_app
+          mkdir -p android/gradle/wrapper
+          cat << 'EOF' > android/gradle/wrapper/gradle-wrapper.properties
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
 
       - name: Get dependencies
         run: flutter pub get
