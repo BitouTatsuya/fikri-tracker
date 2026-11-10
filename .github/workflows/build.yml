@@ -47,8 +47,8 @@ jobs:
 
       - name: Patch Code for Compatibility
         run: |
-          # 1. Update flutter_foreground_task ke versi 8.x agar cocok dengan kodingan
-          sed -i 's/flutter_foreground_task:.*/flutter_foreground_task: ^8.18.0/' pubspec.yaml
+          # 1. Update flutter_foreground_task ke versi ^8.17.0
+          sed -i 's/flutter_foreground_task:.*/flutter_foreground_task: ^8.17.0/' pubspec.yaml
 
           # 2. Perbaiki DialogThemeData -> DialogTheme di app_theme.dart
           sed -i 's/DialogThemeData/DialogTheme/g' lib/theme/app_theme.dart
@@ -76,4 +76,3 @@ jobs:
           files: build/app/outputs/flutter-apk/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
