@@ -45,6 +45,17 @@ jobs:
           zipStorePath=wrapper/dists
           EOF
 
+      - name: Patch Code for Compatibility
+        run: |
+          # 1. Update flutter_foreground_task ke versi 8.x agar cocok dengan kodingan
+          sed -i 's/flutter_foreground_task:.*/flutter_foreground_task: ^8.18.0/' pubspec.yaml
+
+          # 2. Perbaiki DialogThemeData -> DialogTheme di app_theme.dart
+          sed -i 's/DialogThemeData/DialogTheme/g' lib/theme/app_theme.dart
+
+          # 3. Sesuaikan onDestroy dengan versi 8.x
+          sed -i 's/onDestroy(DateTime timestamp)/onDestroy(DateTime timestamp, bool isTimeout)/g' lib/services/timer_task_handler.dart
+
       - name: Get dependencies
         run: flutter pub get
 
@@ -65,3 +76,4 @@ jobs:
           files: build/app/outputs/flutter-apk/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
