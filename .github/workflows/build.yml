@@ -5,6 +5,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,8 +29,13 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Repair platform wrapper files if needed
-        run: flutter create . --platforms=android
+      - name: Setup Gradle Wrapper
+        run: |
+          flutter create --project-name=temp_app temp_app
+          cp -n temp_app/android/gradlew android/ || true
+          cp -rn temp_app/android/gradle android/ || true
+          chmod +x android/gradlew
+          rm -rf temp_app
 
       - name: Get dependencies
         run: flutter pub get
@@ -39,13 +47,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fikri-tracker-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/*.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0
-          name: "Fikri Tracker v1.0.0"
-          files: build/app/outputs/flutter-apk/app-release.apk
+          tag_name: "v1.0.${{ github.run_number }}"
+          name: "Fikri Tracker Release v1.0.${{ github.run_number }}"
+          files: build/app/outputs/flutter-apk/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
